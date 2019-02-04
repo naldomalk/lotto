@@ -1,6 +1,6 @@
 'use strict'
 
-const conn = require('./conexao');
+global.conn = require('./conexao');
 const funcoes = require('./funcoes/funcoes_bd');
 const http = require('http');
 const express = require('express');
@@ -24,15 +24,8 @@ app.get('/bets', (req, res) =>{
     funcoes.bd_query('SELECT * FROM bets', res);
 })
 
-
 app.post('/register', function(req, res, next) {
-
-    console.log(req.params);
-
-    res.send("modulo: "+req.params.modulo+"<br>ID: "+req.params.id+"<br>teste: ");
-
-    //var retorno = modulo_executa("GET", req.params.modulo, req.params.id, 0);
-    //res.send(retorno);
+    //
 });
 
 app.post('/bet', function(req, res, next){
