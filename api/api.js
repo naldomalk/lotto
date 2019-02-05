@@ -30,7 +30,7 @@ app.post('/bet', sistema.checa_usuario, function(req, res, next) {
     sistema.post.IDUsuario  = sistema.IDUsuario; // ### converter em funcao dinamica por modulo
     sistema.post.IDJogo     = 1;
 
-    var SQL = 'INSERT INTO bets (IDUsuario,IDJogo) VALUES ?';
+    var SQL = 'INSERT INTO bets (IDUsuario,IDJogo) VALUES (?,?)';
 
     conn.query(SQL, [sistema.post], function (error, results, fields){ if(error) return console.log(error); });
 
