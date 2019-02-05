@@ -3,7 +3,7 @@
 global.conn = require('./conexao');
 global.sistema = require('./funcoes/checa_usuario');
 
-const funcoes = require('./funcoes/funcoes_bd');
+const fn = require('./funcoes/funcoes');
 const http = require('http');
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -19,10 +19,10 @@ app.use(bodyParser.json());
 const server = http.createServer(app);
 const router = express.Router();
 
-app.get('/', (req, res) => res.json({ message: 'Rodando api Lotto!' }));
+app.get('/', (req, res) => res.json({ message: 'API Lotto!' }));
 
 app.get('/bets', sistema.checa_usuario, (req, res, next) =>{
-    funcoes.bd_query('SELECT * FROM bets', req, res);
+    fn.bd_query('SELECT * FROM bets', req, res);
 })
 
 app.post('/bet', sistema.checa_usuario, function(req, res, next) {
@@ -30,7 +30,7 @@ app.post('/bet', sistema.checa_usuario, function(req, res, next) {
     sistema.post.IDUsuario  = sistema.IDUsuario; // ### converter em funcao dinamica por modulo
     sistema.post.IDJogo     = 1;
 
-    var SQL = "INSERT INTO bets (IDUsuario,IDJogo) VALUES (?)";
+    var SQL = 'INSERT INTO bets (IDUsuario,IDJogo) VALUES ?';
 
     conn.query(SQL, [sistema.post], function (error, results, fields){ if(error) return console.log(error); });
 
@@ -48,17 +48,18 @@ app.post('/bet', sistema.checa_usuario, function(req, res, next) {
     res.send("Teste: "+SQL);
 });
 
-app.post('/register', function(req, res, next) {
-    //
+app.post('/registrar', function(req, res, next) {
+    var SQL = 'INSERT INTO usuarios (Usuario, Email, Fone, Data_Nascimento) VALUES ?';
+
+    conn.query(SQL, [sistema.post], function (error, results, fields){ if(error) return console.log(error); });
+
+    conn.end();
 });
 
-app.post('/bet', function(req, res, next){
-    //var retorno = modulo_executa("PUT", req.params.modulo, req.params.id, 0);
-    //res.send(retorno);
-})
+app.post('/login', function(req, res, next) {
+    //
+});
 
 server.listen(port);
 
 console.log('Api rodando...');
-
-//conn.query("INSERT INTO teste (DateTime) values(Now())", function(error, results, fields){ });
