@@ -40,13 +40,13 @@ app.post('/bet', sistema.checa_usuario, function(req, res, next) {
     });
 
 
-    for(var i=1;i<=8;i++){
+    for(var i=1; i<=8; i++){
+
         var Numero = req.query['num_'+i];
         var SQL = `INSERT INTO bets_numbers (IDBet,Number) VALUES ((SELECT IDBet FROM bets WHERE IDUsuario = ${IDUsuario} ORDER BY IDBet DESC LIMIT 1), ${Numero})`;
         
         conn.query(SQL, sistema.post, function (error, results, fields){ if(error) return console.log(error);  });
     }
-
 
     conn.end();
 
