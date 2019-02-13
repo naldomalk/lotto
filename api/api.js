@@ -26,19 +26,24 @@ app.get('/bets', sistema.checa_usuario, (req, res, next) =>{
 })
 
 app.post('/bet', sistema.checa_usuario, function(req, res, next) {
-   
-    sistema.post.IDUsuario  = sistema.IDUsuario; // ### converter em funcao dinamica por modulo
-    sistema.post.IDJogo     = 1;
+    
+    var IDUsuario   = req.body.IDUsuario;
+    var IDJogo      = req.body.IDJogo;
+    sistema.post.IDUsuario  = IDUsuario; //sistema.IDUsuario; // ### converter em funcao dinamica por modulo
+    sistema.post.IDJogo     = IDJogo;
 
-    var SQL = 'INSERT INTO bets (IDUsuario,IDJogo) VALUES ?';
+    var SQL = 'INSERT INTO bets (IDUsuario, IDJogo) VALUES (?,?)';
+    conn.query(SQL, [IDUsuario, IDJogo], function (error, results, fields){ 
+        console.log(fields);
+        if(error) return console.log(error);
+        else return console.log(results);
+    });
 
-    conn.query(SQL, [sistema.post], function (error, results, fields){ if(error) return console.log(error); });
 
-    for(var i=1;i<=8;i++){
+    for(var i=1; i<=8; i++){
+
         var Numero = req.query['num_'+i];
-        
-        var SQL = `INSERT INTO bets_numbers (IDBet,Number) 
-        VALUES ((SELECT IDBet FROM bets WHERE IDUsuario = ${sistema.IDUsuario} ORDER BY IDBet DESC LIMIT 1),${Numero})`;
+        var SQL = `INSERT INTO bets_numbers (IDBet,Number) VALUES ((SELECT IDBet FROM bets WHERE IDUsuario = ${IDUsuario} ORDER BY IDBet DESC LIMIT 1), ${Numero})`;
         
         conn.query(SQL, sistema.post, function (error, results, fields){ if(error) return console.log(error);  });
     }
