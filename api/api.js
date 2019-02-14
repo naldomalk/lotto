@@ -2,8 +2,8 @@
 
 global.conn = require('./connection');
 global.system = require('./functions/check_user');
+global.fn = require('./functions/main');
 
-const fn = require('./funcoes/functions');
 const http = require('http');
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -19,12 +19,12 @@ app.use(bodyParser.json());
 const server = http.createServer(app);
 
 const routeIndex    = require('./routes/index');
+const routeLogin    = require('./routes/login');
 const routeBet      = require('./routes/bet');
-const routeLogin      = require('./routes/login');
 
 app.use('/', routeIndex);
-app.use('/bet', routeBet);
 app.use('/login', routeLogin);
+app.use('/bet', routeBet);
 
 server.listen(port);
 

@@ -11,13 +11,13 @@ exports.get = async(req, res, next) => {
 }
 
 exports.post = async(req, res, next) => {
-    var IDUser   = req.body.IDUsuario;
-    var IDJogo   = req.body.IDJogo;
+    var IDUser   = req.body.IDUser;
+    var IDJogo   = req.body.IDGame;
     system.post.IDUser  = IDUser; //sistema.IDUsuario; // ### converter em funcao dinamica por modulo
     system.post.IDGame  = IDGame;
 
     var SQL = 'INSERT INTO bets (IDUsuario, IDJogo) VALUES (?,?)';
-    conn.query(SQL, [IDUsuario, IDJogo], function (error, results, fields){ 
+    conn.query(SQL, [IDUser, IDGame], function (error, results, fields){ 
         console.log(fields);
         if(error) return console.log(error);
         else return console.log(results);
