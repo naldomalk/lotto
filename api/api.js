@@ -1,9 +1,9 @@
 'use strict'
 
-global.conn = require('./conexao');
-global.sistema = require('./funcoes/checa_usuario');
+global.conn = require('./connection');
+global.system = require('./functions/check_user');
 
-const fn = require('./funcoes/funcoes');
+const fn = require('./funcoes/functions');
 const http = require('http');
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -20,12 +20,11 @@ const server = http.createServer(app);
 
 const routeIndex    = require('./routes/index');
 const routeBet      = require('./routes/bet');
-var routeInclude  = null;
-
-//app.use('/', function(req, res, next){ console.log('teste...'); next(); },routeIndex);
+const routeLogin      = require('./routes/login');
 
 app.use('/', routeIndex);
 app.use('/bet', routeBet);
+app.use('/login', routeLogin);
 
 server.listen(port);
 

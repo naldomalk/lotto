@@ -2,7 +2,7 @@
 
 exports.get = async(req, res, next) => {
     //global.fn.bd_query('SELECT * FROM bets', req, res);
-    conn.query('select * from bets', function(error, results, fields){
+    conn.query('SELECT * FROM bets B WHERE B.IDUser = ?', function(error, results, fields){
         if(error) 
         res.json(error);
         else
@@ -11,10 +11,10 @@ exports.get = async(req, res, next) => {
 }
 
 exports.post = async(req, res, next) => {
-    var IDUsuario   = req.body.IDUsuario;
-    var IDJogo      = req.body.IDJogo;
-    sistema.post.IDUsuario  = IDUsuario; //sistema.IDUsuario; // ### converter em funcao dinamica por modulo
-    sistema.post.IDJogo     = IDJogo;
+    var IDUser   = req.body.IDUsuario;
+    var IDJogo   = req.body.IDJogo;
+    system.post.IDUser  = IDUser; //sistema.IDUsuario; // ### converter em funcao dinamica por modulo
+    system.post.IDGame  = IDGame;
 
     var SQL = 'INSERT INTO bets (IDUsuario, IDJogo) VALUES (?,?)';
     conn.query(SQL, [IDUsuario, IDJogo], function (error, results, fields){ 
@@ -32,7 +32,7 @@ exports.post = async(req, res, next) => {
                         ${Numero}
                         )`;
         
-        conn.query(SQL, sistema.post, function (error, results, fields){ if(error) return console.log(error);  });
+        conn.query(SQL, system.post, function (error, results, fields){ if(error) return console.log(error);  });
     }
 
     conn.end();
