@@ -10,5 +10,10 @@ module.exports = {
   
   tabela : function (){
 
+  },
+
+  routeInclude : function(req, res, next, include){
+      global.routeInclude = require(include);
+      next();
   }
 }

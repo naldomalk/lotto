@@ -17,54 +17,18 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 const server = http.createServer(app);
-const router = express.Router();
 
-app.get('/', (req, res) => res.json({ message: 'API Lotto!' }));
+const routeIndex    = require('./routes/index');
+const routeBet      = require('./routes/bet');
+var routeInclude  = null;
 
-app.get('/bets', sistema.checa_usuario, (req, res, next) =>{
-    fn.bd_query('SELECT * FROM bets', req, res);
-})
+//app.use('/', function(req, res, next){ console.log('teste...'); next(); },routeIndex);
 
-app.post('/bet', sistema.checa_usuario, function(req, res, next) {
-    
-    var IDUsuario   = req.body.IDUsuario;
-    var IDJogo      = req.body.IDJogo;
-    sistema.post.IDUsuario  = IDUsuario; //sistema.IDUsuario; // ### converter em funcao dinamica por modulo
-    sistema.post.IDJogo     = IDJogo;
-
-    var SQL = 'INSERT INTO bets (IDUsuario, IDJogo) VALUES (?,?)';
-    conn.query(SQL, [IDUsuario, IDJogo], function (error, results, fields){ 
-        console.log(fields);
-        if(error) return console.log(error);
-        else return console.log(results);
-    });
-
-
-    for(var i=1; i<=8; i++){
-
-        var Numero = req.query['num_'+i];
-        var SQL = `INSERT INTO bets_numbers (IDBet,Number) VALUES ((SELECT IDBet FROM bets WHERE IDUsuario = ${IDUsuario} ORDER BY IDBet DESC LIMIT 1), ${Numero})`;
-        
-        conn.query(SQL, sistema.post, function (error, results, fields){ if(error) return console.log(error);  });
-    }
-
-    conn.end();
-
-    res.send("Teste: "+SQL);
-});
-
-app.post('/registrar', function(req, res, next) {
-    var SQL = 'INSERT INTO usuarios (Usuario, Email, Fone, Data_Nascimento) VALUES ?';
-
-    conn.query(SQL, [sistema.post], function (error, results, fields){ if(error) return console.log(error); });
-
-    conn.end();
-});
-
-app.post('/login', function(req, res, next) {
-    //
-});
+app.use('/', routeIndex);
+app.use('/bet', routeBet);
 
 server.listen(port);
 
-console.log('Api rodando...');
+module.exports = app;
+
+console.log('Api run...');
