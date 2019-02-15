@@ -1,5 +1,7 @@
 'use strict'
 
+// version 1.0.4
+
 global.conn = require('./connection');
 global.system = require('./functions/check_user');
 global.fn = require('./functions/main');
@@ -19,13 +21,11 @@ app.use(bodyParser.json());
 const server = http.createServer(app);
 
 const routeIndex    = require('./routes/index');
-const routeRegister = require('./routes/register');
 const routeLogin    = require('./routes/login');
 const routeBet      = require('./routes/bet');
 
 app.use('/', routeIndex);
-app.use('/register', routeRegister);
-app.use('/login', system.check_user, routeLogin);
+app.use('/login', routeLogin);
 app.use('/bet', system.check_user, routeBet);
 
 server.listen(port);
