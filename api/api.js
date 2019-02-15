@@ -19,7 +19,7 @@ app.use(bodyParser.json());
 const server = http.createServer(app);
 
 const routeIndex    = require('./routes/index');
-const routeRegister    = require('./routes/register');
+const routeRegister = require('./routes/register');
 const routeLogin    = require('./routes/login');
 const routeBet      = require('./routes/bet');
 
