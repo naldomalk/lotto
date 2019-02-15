@@ -5,51 +5,47 @@ const config = {
         props : {
                 'Password':{type:'password',req:true},
                 1:{1:1}
-            },
-
-        teste : async(req, res, next) => {
-            res.send("teste");
-        }
+            }
 }
 
 exports.module = {
-    // register user
     post : async(req, res, next) => {
         let fields = config.fields;
         let values = fn.check_post(config, req);
 
-        console.log(fields);
-
         let SQL = `INSERT INTO users (${fields}) VALUES (?)`;
 
         conn.query(SQL, [values], function(error, results, fields){
-            if(error) 
-            res.status(400).json(error);
-            else
-            res.json(results);
+            (error)?res.status(400).json(error)
+            :res.json(results);
         });
     },
-    // logon user
     get : async(req, res, next) => {
         let reconfig = Object.assign({}, config);
         reconfig.fields = 'Email, Password'; 
 
         let values = fn.check_post(reconfig,req); 
 
-        let SQL = `SELECT *
+        let SQL = `SELECT U.IDUser, MD5(CONCAT(U.IDUser,NOW())) AS Token
                     FROM users U 
                     WHERE U.Email = ? 
                     AND U.Password = ?`;
 
         var query = conn.query(SQL, values, function(error, results, fields){
             if(error) 
-            res.status(400).json(error);
+                res.status(400).json(error);
             else{
                if(results.length==0){
-                   res.status(401).send('erro');
+                   res.status(401).send('Erro login');
                }else{
-                   conn.query(`INSERT INTO users_sessions () VALUES()`, function(error, results, fields){
+                   let IDUser = results[0]['IDUser'];
+                   let Token = results[0]['Token'];
 
+                   let SQL = `INSERT INTO users_sessions (IDUser,Token) VALUES(?,?)`;
+
+                   conn.query(SQL, [IDUser, Token], function(error){
+                        (error)?res.status(400).json(error)
+                        :res.json(`{Token:${Token}}`);
                    })
                }
             }
@@ -57,16 +53,17 @@ exports.module = {
         });
         console.log(query.sql);
     },
-    // logoff user
     delete : async(req, res, next) => {
-        var SQL = `DELETE FROM users_sessions UU 
-                    WHERE UU.IDUser = ?`;
+        let SQL = `DELETE FROM users_sessions 
+                    WHERE Token = ?`;
 
-        conn.query(SQL, function(error, results, fields){
+        let Token = req.get('Token');
+
+        conn.query(SQL, [Token], function(error, results, fields){
             if(error) 
-            res.json(error);
+            res.status(400).json(error);
             else
-            res.json(results);
+            res.send('{Logoff:true}');
         });
     }
 }

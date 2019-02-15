@@ -23,7 +23,7 @@ const routeLogin    = require('./routes/login');
 const routeBet      = require('./routes/bet');
 
 app.use('/', routeIndex);
-app.use('/login', routeLogin);
+app.use('/login', system.check_user, routeLogin);
 app.use('/bet', routeBet);
 
 server.listen(port);
