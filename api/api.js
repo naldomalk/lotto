@@ -19,12 +19,14 @@ app.use(bodyParser.json());
 const server = http.createServer(app);
 
 const routeIndex    = require('./routes/index');
+const routeRegister    = require('./routes/refister');
 const routeLogin    = require('./routes/login');
 const routeBet      = require('./routes/bet');
 
 app.use('/', routeIndex);
+app.use('/register', routeRegister);
 app.use('/login', system.check_user, routeLogin);
-app.use('/bet', routeBet);
+app.use('/bet', system.check_user, routeBet);
 
 server.listen(port);
 
