@@ -1,7 +1,7 @@
 'use strict';
 
 const config = {
-        fields : 'Email, Password',
+        fields : 'User, Phone, Birth, Email, Password',
         props : {
                 'Password':{type:'password',req:true},
                 1:{1:1}
