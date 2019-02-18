@@ -1,7 +1,13 @@
 module.exports = {
     check_user : function(req, res, next){
+        
         let Token = req.get('Token');
+        
         system.Logon = false;
+        system.post  = req.params;
+        system.ID    = req.body.ID || 0;
+
+        console.log(Token);
 
         if (!Token) return res.status(401).send({ auth: false, message: 'Token não informado.' });
 
@@ -17,7 +23,6 @@ module.exports = {
                     return;
                 }else{
                     system.Logon    = true;
-                    system.post     = req.params;
                     system.IDUser   = results[0]['IDUser'];
 
                     next();

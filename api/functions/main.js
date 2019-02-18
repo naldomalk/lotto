@@ -12,23 +12,25 @@ module.exports = {
 
   },
 
-  check_post : function(config, req){
+  check_post : function(config, req, valid = []){
     let fields = config.fields.split(',');
+    let post = req.body || {};
     let a = [];
-
+    
     fields.forEach(field => {
         field = field.trim();
        
         let props = config.props[field] || {} ;
         let type = props.type || 'text';
+        let value = post[field] || '';
 
-        let value = req.query[field];
-
-        if(type=="password") {
+        if(type=="password" && value !=='') {
             var md5 = require('md5');
             value = md5(value);
         }
 
+        if(valid[field]!==undefined) value = valid[field];
+        
         a.push(value);
     });
 

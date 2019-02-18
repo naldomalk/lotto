@@ -9,5 +9,5 @@ const config = {
 }
 
 exports.get = async(req, res, next) =>{
-    res.json({ message: 'API Lotto!' });
+    res.json({ message: 'API Lotto!!' });
 }

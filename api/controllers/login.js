@@ -1,7 +1,9 @@
 'use strict';
 
 const config = {
+        table : 'users',
         fields : 'User, Phone, Birth, Email, Password',
+        id : 'IDUser',
         props : {
                 'Password':{type:'password',req:true},
                 1:{1:1}
@@ -10,12 +12,12 @@ const config = {
 
 exports.module = {
     post : async(req, res, next) => {
-        let fields = config.fields;
-        let values = fn.check_post(config, req);
+        
+        let posts = fn.check_post(config, req);
 
-        let SQL = `INSERT INTO users (${fields}) VALUES (?)`;
+        let SQL = `INSERT INTO ${config.table} (${config.fields}) VALUES (?)`;
 
-        conn.query(SQL, [values], function(error, results, fields){
+        conn.query(SQL, [posts], function(error, results, fields){
             (error)?res.status(400).json(error)
             :res.json(results);
         });
@@ -25,14 +27,14 @@ exports.module = {
         
         reconfig.fields = 'Email, Password';
 
-        let values = fn.check_post(reconfig,req); 
+        let posts = fn.check_post(reconfig,req); 
 
         let SQL = `SELECT U.IDUser, MD5(CONCAT(U.IDUser,NOW())) AS Token
                     FROM users U 
                     WHERE U.Email = ? 
                     AND U.Password = ?`;
 
-        var query = conn.query(SQL, values, function(error, results, fields){
+        let query = conn.query(SQL, posts, function(error, results, fields){
             if(error) 
                 res.status(400).json(error);
             else{

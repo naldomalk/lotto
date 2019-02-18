@@ -1,41 +1,65 @@
 'use strict';
 
-exports.get = async(req, res, next) => {
-    //global.fn.bd_query('SELECT * FROM bets', req, res);
-    conn.query('SELECT * FROM bets B WHERE B.IDUser = ?', function(error, results, fields){
-        if(error) 
-        res.json(error);
-        else
-        res.json(results);
-    });
+const config = {
+    table : 'bets',
+    fields : 'IDUser, IDGame',
+    id : 'IDBet',
+    props : {
+            'IDUser':{backend:true},
+            1:{1:1}
+        }
 }
 
-exports.post = async(req, res, next) => {
-    var IDUser   = req.body.IDUser;
-    var IDJogo   = req.body.IDGame;
-    system.post.IDUser  = IDUser; //sistema.IDUsuario; // ### converter em funcao dinamica por modulo
-    system.post.IDGame  = IDGame;
+exports.module = {
+    get : async(req, res, next) => { 
 
-    var SQL = 'INSERT INTO bets (IDUsuario, IDJogo) VALUES (?,?)';
-    conn.query(SQL, [IDUser, IDGame], function (error, results, fields){ 
-        console.log(fields);
-        if(error) return console.log(error);
-        else return console.log(results);
-    })
+        let ID = system.ID;
 
-    for(var i=1; i<=8; i++){
+        let SQL = `SELECT TB.IDBet, TB.IDGame, TB.DateTime, TB.Status
+                    FROM ${config.table} TB 
+                    WHERE 1 = 1
+                    AND TB.IDUser = ${system.IDUser}
+                    ORDER BY CASE WHEN TB.${config.id} = ${ID} THEN 0 ELSE 1 END`;
 
-        var Numero = req.query['num_'+i];
-        var SQL = `INSERT INTO bets_numbers (IDBet,Number) 
-                VALUES (
-                        (SELECT IDBet FROM bets WHERE IDUsuario = ${IDUsuario} ORDER BY IDBet DESC LIMIT 1), 
-                        ${Numero}
-                        )`;
-        
-        conn.query(SQL, system.post, function (error, results, fields){ if(error) return console.log(error);  });
+        conn.query(SQL, function(error, results, fields){
+            (error)
+            ?res.status(400).json(error)
+            :res.json(results);
+        });
+    },
+
+    post : async(req, res, next) => {
+
+        let valid = [];
+
+        valid['IDUser'] = system.IDUser;
+        valid['IDGame'] = 1; // ### tempoário...
+
+        let posts = fn.check_post(config, req, valid);
+    
+        let SQL = `INSERT INTO ${config.table} (${config.fields}) VALUES (?)`;
+
+        conn.query(SQL, [posts], function (error, results, fields){ 
+            if(error){
+                res.status(400).send(error);
+            } else {
+                let posts = req.body || {};
+                let total = 8;
+                
+                for(var i=1; i<=total; i++){
+                    let Numero = req.body['num_'+i];
+                    let SQL = `INSERT INTO bets_numbers (IDBet,Number,Star) 
+                                VALUES (
+                                        (SELECT IDBet FROM bets WHERE IDUser = ${system.IDUser} ORDER BY IDBet DESC LIMIT 1), 
+                                        ${Numero},
+                                        ${(i>6)?1:0}
+                                        )`;
+                    
+                    conn.query(SQL, function (error, results, fields){ if(error) i=1000; });
+                }
+            
+                res.send(`{Numbers:${i-1},Total:${total}}`);
+            }
+        })
     }
-
-    conn.end();
-
-    res.send("Teste: "+SQL);
 }
