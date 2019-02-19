@@ -15,11 +15,18 @@ exports.module = {
 
         let ID = system.ID;
 
-        let SQL = `SELECT TB.IDBet, TB.IDGame, TB.DateTime, TB.Status
-                    FROM ${config.table} TB 
+        let SQL = `SELECT B.IDBet, B.IDGame, B.DateTime, B.Status,
+                        (SELECT GROUP_CONCAT(' ',BN.Number) FROM bets_numbers BN WHERE BN.IDBet = B.IDBet GROUP BY BN.IDBet) as My_Numbers,
+                        (SELECT GROUP_CONCAT(BN2.Number ORDER BY CASE WHEN BN2.IDBet = B.IDBet THEN 0 ELSE 1 END, BN2.IDBet, BN2.NUMBER ASC ) 
+                            FROM bets B2 
+                            INNER JOIN bets_numbers BN2 on BN2.IDBet = B2.IDBet
+                            WHERE B2.IDBet_Group = B.IDBet_Group AND (B2.IDBet_Group <> 0 OR B2.IDBet = B.IDBet)
+                            GROUP BY B2.IDBet_Group 
+                        ) as Numbers
+                    FROM bets B 
                     WHERE 1 = 1
-                    AND TB.IDUser = ${system.IDUser}
-                    ORDER BY CASE WHEN TB.${config.id} = ${ID} THEN 0 ELSE 1 END`;
+                    AND B.IDUser = ${system.IDUser}
+                    ORDER BY CASE WHEN B.${config.id} = ${ID} THEN 0 ELSE 1 END, B.${config.id} DESC`;
 
         conn.query(SQL, function(error, results, fields){
             (error)
@@ -58,7 +65,7 @@ exports.module = {
                     conn.query(SQL, function (error, results, fields){ if(error) i=1000; });
                 }
             
-                res.send(`{Numbers:${i-1},Total:${total}}`);
+                res.status(200).json(`{Numbers:${i-1},Total:${total}}`);
             }
         })
     }
