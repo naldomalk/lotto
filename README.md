@@ -1,8 +1,5 @@
 # lotto
 
-Projeto APP para bolão de Lotto Europeia
+Project Lotto Group - Lotto Gruppen
 
-Plataforma híbrida em HTML5, Appstore e Playstore
-
-Rules
-1. Commit versionado nos comentarios
+API RESTFul developed in Nodejs
